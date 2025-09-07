@@ -42,7 +42,7 @@ func (d *Dice) registerCoreCommands() {
 		Solve: func(ctx *MsgContext, msg *Message, cmdArgs *CmdArgs) CmdExecuteResult {
 			cmdArgs.ChopPrefixToArgsWith("add", "rm", "del", "list", "show", "find", "trust")
 			if ctx.PrivilegeLevel < 100 {
-				ReplyToSender(ctx, msg, "你不具备Master权限")
+				ReplyToSender(ctx, msg, "哎呀！！你不具备Master权限！")
 				return CmdExecuteResult{Matched: true, Solved: true}
 			}
 
@@ -77,7 +77,7 @@ func (d *Dice) registerCoreCommands() {
 					reason = "骰主指令"
 				}
 				(&d.Config).BanList.AddScoreBase(uid, (&d.Config).BanList.ThresholdBan, "骰主指令", reason, ctx)
-				ReplyToSender(ctx, msg, fmt.Sprintf("已将用户/群组 %s 加入黑名单，原因: %s", uid, reason))
+				ReplyToSender(ctx, msg, fmt.Sprintf("已将用户/群组 %s 加入黑名单！！原因: %s", uid, reason))
 			case "rm", "del":
 				uid = getID()
 				if uid == "" {
@@ -86,11 +86,11 @@ func (d *Dice) registerCoreCommands() {
 
 				item, ok := (&d.Config).BanList.GetByID(uid)
 				if !ok || (item.Rank != BanRankBanned && item.Rank != BanRankTrusted && item.Rank != BanRankWarn) {
-					ReplyToSender(ctx, msg, "找不到用户/群组")
+					ReplyToSender(ctx, msg, "找不到用户/群组！")
 					break
 				}
 
-				ReplyToSender(ctx, msg, fmt.Sprintf("已将用户/群组 %s 移出%s列表", uid, BanRankText[item.Rank]))
+				ReplyToSender(ctx, msg, fmt.Sprintf("已将用户/群组 %s 移出%s列表！", uid, BanRankText[item.Rank]))
 				item.Score = 0
 				item.Rank = BanRankNormal
 			case "trust":
@@ -101,7 +101,7 @@ func (d *Dice) registerCoreCommands() {
 				}
 
 				(&d.Config).BanList.SetTrustByID(uid, "骰主指令", "骰主指令")
-				ReplyToSender(ctx, msg, fmt.Sprintf("已将用户/群组 %s 加入信任列表", uid))
+				ReplyToSender(ctx, msg, fmt.Sprintf("已将用户/群组 %s 加入信任列表！", uid))
 			case "list", "show":
 				// ban/warn/trust
 				var extra, text string
@@ -130,7 +130,7 @@ func (d *Dice) registerCoreCommands() {
 			case "query":
 				var targetID = cmdArgs.GetArgN(2)
 				if targetID == "" {
-					ReplyToSender(ctx, msg, "未指定要查询的对象！")
+					ReplyToSender(ctx, msg, "你没指定要查询的对象！")
 					break
 				}
 
@@ -189,7 +189,7 @@ func (d *Dice) registerCoreCommands() {
 			}
 
 			if d.Parent.IsHelpReloading {
-				ReplyToSender(ctx, msg, "帮助文档正在重新装载，请稍后...")
+				ReplyToSender(ctx, msg, "卡西欧的帮助文档正在重新装载，别那么心急！")
 				return CmdExecuteResult{Matched: true, Solved: true}
 			}
 
@@ -198,30 +198,30 @@ func (d *Dice) registerCoreCommands() {
 				if cmdArgs.GetKwarg("groupclr") != nil {
 					ctx.Group.SetDefaultHelpGroup("")
 					if oldDefault != "" {
-						ReplyToSender(ctx, msg, "已清空默认搜索分组，原分组为"+oldDefault)
+						ReplyToSender(ctx, msg, "卡西欧已清空默认搜索分组！原分组为"+oldDefault)
 					} else {
-						ReplyToSender(ctx, msg, "未指定默认搜索分组")
+						ReplyToSender(ctx, msg, "你没有指定默认搜索分组！")
 					}
 				} else if _defaultGroup := cmdArgs.GetKwarg("group"); _defaultGroup != nil {
 					defaultGroup := _defaultGroup.Value
 					if defaultGroup == "" {
 						// 为查看默认分组
 						if oldDefault != "" {
-							ReplyToSender(ctx, msg, "当前默认搜索分组为"+oldDefault)
+							ReplyToSender(ctx, msg, "嗯嗯……当前默认搜索分组为"+oldDefault)
 						} else {
-							ReplyToSender(ctx, msg, "未指定默认搜索分组")
+							ReplyToSender(ctx, msg, "你没有指定默认搜索分组！")
 						}
 					} else {
 						// 为设置默认分组
 						ctx.Group.SetDefaultHelpGroup(defaultGroup)
 						if oldDefault != "" {
-							ReplyToSender(ctx, msg, fmt.Sprintf("默认搜索分组由%s切换到%s", oldDefault, defaultGroup))
+							ReplyToSender(ctx, msg, fmt.Sprintf("哼哼！默认搜索分组由%s切换到%s", oldDefault, defaultGroup))
 						} else {
 							ReplyToSender(ctx, msg, "指定默认搜索分组为"+defaultGroup)
 						}
 					}
 				} else {
-					ReplyToSender(ctx, msg, "设置选项有误")
+					ReplyToSender(ctx, msg, "哎呀！设置选项有误")
 					return CmdExecuteResult{Matched: true, Solved: true}
 				}
 				return CmdExecuteResult{Matched: true, Solved: true}
@@ -277,9 +277,9 @@ func (d *Dice) registerCoreCommands() {
 					// Copied from 支援换行符 By Fripine #963
 					text.Content = ctx.TranslateSplit(text.Content)
 					content := d.Parent.Help.GetContent(text, 0)
-					ReplyToSender(ctx, msg, fmt.Sprintf("词条: %s:%s\n%s", text.PackageName, text.Title, content))
+					ReplyToSender(ctx, msg, fmt.Sprintf("找到了！词条: %s:%s\n%s", text.PackageName, text.Title, content))
 				} else {
-					ReplyToSender(ctx, msg, "未发现对应ID的词条")
+					ReplyToSender(ctx, msg, "哎——！等等，我根本没找到对应ID的词条啊！")
 				}
 				return CmdExecuteResult{Matched: true, Solved: true}
 			}
@@ -328,14 +328,14 @@ func (d *Dice) registerCoreCommands() {
 			// 进行结果搜索
 			search, total, pgStart, pgEnd, err := d.Parent.Help.Search(ctx, text, false, numLimit, page, group)
 			if err != nil {
-				ReplyToSender(ctx, msg, groupStr+"搜索故障: "+err.Error())
+				ReplyToSender(ctx, msg, groupStr+"咕呜呜呜……！搜索故障: "+err.Error())
 				return CmdExecuteResult{Matched: true, Solved: true}
 			}
 			if len(search.Hits) == 0 {
 				if total == 0 {
-					ReplyToSender(ctx, msg, groupStr+"未找到搜索结果")
+					ReplyToSender(ctx, msg, groupStr+"怎，怎么没有搜索结果！")
 				} else {
-					ReplyToSender(ctx, msg, fmt.Sprintf("%s找到%d条结果, 但在当前页码并无结果", groupStr, total))
+					ReplyToSender(ctx, msg, fmt.Sprintf("%s找到%d条结果！ 但是当前页码没有结果喔？", groupStr, total))
 				}
 				return CmdExecuteResult{Matched: true, Solved: true}
 			}
@@ -390,15 +390,15 @@ func (d *Dice) registerCoreCommands() {
 				// Copied from 支援换行符 By Fripine #963
 				best.Content = ctx.TranslateSplit(best.Content)
 				content := d.Parent.Help.GetContent(best, 0)
-				bestResult = fmt.Sprintf("最优先结果%s:\n词条: %s:%s\n%s\n\n", groupStr, best.PackageName, best.Title, content)
+				bestResult = fmt.Sprintf("看！这是我叼来的哦？最优先的结果-%s:\n词条: %s:%s\n%s\n\n", groupStr, best.PackageName, best.Title, content)
 			}
 
 			prefix := d.Parent.Help.GetPrefixText()
-			rplCurPage := fmt.Sprintf("本页结果:\n%s\n", others)
-			rplDetailHint := "使用\".find <序号>\"可查看明细，如.find 123\n"
+			rplCurPage := fmt.Sprintf("这页的结果:\n%s\n", others)
+			rplDetailHint := "想知道更多？使用\".find <序号>\"看看吧？比如.find 123！\n"
 			// pgStart是下标闭左边界, 加1以获得序号; pgEnd是下标开右边界, 无需调整就是最后一条的序号
-			rplPageNum := fmt.Sprintf("共%d条结果, 当前显示第%d页(第%d条 到 第%d条)\n", total, page, pgStart+1, pgEnd)
-			rplPageHint := "使用\".find <词条> --page=<页码> 查看更多结果\n"
+			rplPageNum := fmt.Sprintf("翻出了%d条结果！当前显示第%d页(第%d条 到 第%d条)\n", total, page, pgStart+1, pgEnd)
+			rplPageHint := "想看更多结果？使用\".find <词条> --page=<页码> 试试看！\n"
 			ReplyToSender(ctx, msg, prefix+groupStr+bestResult+rplCurPage+rplDetailHint+rplPageNum+rplPageHint)
 			return CmdExecuteResult{Matched: true, Solved: true}
 		},
@@ -429,7 +429,7 @@ func (d *Dice) registerCoreCommands() {
 
 			if strings.EqualFold(arg, "reload") {
 				if ctx.PrivilegeLevel < 100 {
-					ReplyToSender(ctx, msg, "你不具备Master权限")
+					ReplyToSender(ctx, msg, "呀！你不具备Master权限！")
 				} else {
 					dm := d.Parent
 					if dm.JustForTest {
@@ -442,9 +442,9 @@ func (d *Dice) registerCoreCommands() {
 						dm.Help.Close()
 
 						dm.InitHelp()
-						ReplyToSender(ctx, msg, "帮助文档已经重新装载")
+						ReplyToSender(ctx, msg, "卡西欧的帮助文档已经重新装载……")
 					} else {
-						ReplyToSender(ctx, msg, "帮助文档正在重新装载，请稍后...")
+						ReplyToSender(ctx, msg, "卡西欧帮助文档正在重新装载！别心急！")
 					}
 				}
 				return CmdExecuteResult{Matched: true, Solved: true}
