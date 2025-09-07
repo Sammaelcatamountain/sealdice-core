@@ -111,7 +111,6 @@ func (d *Dice) registerCoreCommands() {
 					if v.Rank == BanRankNormal {
 						return true
 					}
-
 					match := (extra == "trust" && v.Rank == BanRankTrusted) ||
 						(extra == "ban" && v.Rank == BanRankBanned) ||
 						(extra == "warn" && v.Rank == BanRankWarn)
